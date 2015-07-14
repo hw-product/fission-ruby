@@ -55,7 +55,7 @@ Packager.build do
       template :generic
       commands do
         build [
-          'wget -O ruby.tar.gz https://github.com/ruby/ruby/archive/v$(echo $PACKAGER_VERSION | tr _ .).tar.gz',
+          'wget -O ruby.tar.gz https://github.com/ruby/ruby/archive/v$(echo $PACKAGER_VERSION | tr . _).tar.gz',
           '/bin/tar -zxf ruby.tar.gz',
           'mv -f ruby-*/* .',
           'autoconf',
