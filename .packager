@@ -1,0 +1,82 @@
+# -*- mode: ruby -*-
+# -*- encoding: utf-8 -*-
+
+Packager.build do
+  ubuntu do
+    target do
+      platform 'ubuntu'
+      version '14.04'
+      package 'deb'
+    end
+    dependencies do
+      build [
+        'autoconf',
+        'automake',
+        'bison',
+        'build-essential',
+        'curl',
+        'libc6-dev',
+        'libcurl4-openssl-dev',
+        'libffi-dev',
+        'libreadline-dev',
+        'libreadline6',
+        'libreadline6-dev',
+        'libsqlite3-dev',
+        'libssl-dev',
+        'libtool',
+        'libxml2-dev',
+        'libxslt1-dev',
+        'libyaml-dev',
+        'ncurses-dev',
+        'openssl',
+        'patch',
+        'pkg-config',
+        'python-software-properties',
+        'sqlite3',
+        'wget',
+        'zlib1g',
+        'zlib1g-dev'
+      ]
+      runtime [
+        'ca-certificates',
+        'libstdc++6',
+        'libc6',
+        'libffi6',
+        'libgdbm3',
+        'libncurses5',
+        'libreadline6',
+        'libssl1.0.0',
+        'libyaml-0-2',
+        'zlib1g'
+      ]
+    end
+    build do
+      name 'fission-ruby'
+      template :generic
+      commands do
+        build [
+          'wget -O ruby.tar.gz https://github.com/ruby/ruby/archive/v$(echo $PACKAGER_VERSION | tr _ .).tar.gz',
+          '/bin/tar -zxf ruby.tar.gz',
+          'mv -f ruby-*/* .',
+          'autoconf',
+          './configure --prefix=/usr --disable-install-doc',
+          'cpucores=`nproc` make -j `expr $cpucores - 1 \| 1`',
+          'make install DESTDIR=$PKG_DIR',
+          'make install',
+          'gem install bundler -v "~> 1.10" --no-document',
+          'gem install bundler -v "~> 1.10" --no-document --install-dir $PKG_DIR',
+          'mkdir -p $PKG_DIR/usr/lib/ruby/gems/2.1.0',
+          'cp -R /usr/lib/ruby/gems/2.1.0/* $PKG_DIR/usr/lib/ruby/gems/2.1.0'
+        ]
+      end
+    end
+    packaging do
+      maintainer 'Heavy Water'
+      description 'Fission built Ruby'
+      url 'https://github.com/hw-product/fission-ruby'
+      conflicts 'ruby-interpreter'
+      provides 'ruby-interpreter'
+      replaces 'ruby-interpreter'
+    end
+  end
+end
